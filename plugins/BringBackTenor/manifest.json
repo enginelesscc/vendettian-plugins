@@ -2,7 +2,8 @@
   "name": "BringBackTenor",
   "description": "Revive the dead tenor gif search",
   "authors": [
-    { "name": "Livie", "id": "755950362342457384" }
+    { "name": "Livie", "id": "755950362342457384" },
+    { "name": "Vivyy", "id": "485945225538437130" }
   ],
   "main": "src/index.tsx",
   "vendetta": {

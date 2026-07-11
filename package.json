@@ -6,6 +6,8 @@
 		"dev:watch": "npx nodemon --ignore dist/ -e ts,tsx,json -x \"npm run build\""
 	},
 	"dependencies": {
+		"@noble/ed25519": "^3.1.0",
+		"@noble/hashes": "^2.2.0",
 		"@swc/helpers": "^0.5.17"
 	},
 	"devDependencies": {

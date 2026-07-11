@@ -146,8 +146,8 @@ export default {
             plugin.storage[key] = plugin.storage[key] ?? defaults[key];
         }
 
-        const httpModule = findByProps("HTTP", "get", "post", "put", "patch", "del");
-        if (!httpModule?.HTTP) {
+        const httpModule = findByProps("get", "post", "put", "patch", "delete");
+        if (!httpModule?.get) {
             console.warn("[BringBackTenor] HTTP module not found, plugin disabled");
             return;
         }
@@ -160,14 +160,14 @@ export default {
         }
 
         patches.push(
-            instead("get", httpModule.HTTP, (args: any[], orig: Function) => {
+            instead("get", httpModule, (args: any[], orig: Function) => {
                 const opts = args[0];
                 if (!opts?.url || typeof opts.url !== "string") return orig(...args);
 
                 const url = opts.url.toLowerCase();
                 const q = opts.query?.q;
                 const locale = opts.query?.locale?.replace?.("-", "_")?.toLowerCase();
-
+				
                 if (url.endsWith("/trending-search") || url.endsWith("/trending_search")) {
                     return makeThenable(Promise.resolve({ body: [] }));
                 }

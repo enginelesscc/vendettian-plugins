@@ -2,10 +2,11 @@ import { plugin } from "@vendetta";
 import { findByProps } from "@vendetta/metro";
 import { React } from "@vendetta/metro/common";
 
-const { ScrollView } = findByProps("ScrollView");
-const { TableRadioGroup, TableRadioRow, Stack } = findByProps(
-    "TableRadioGroup", "TableRadioRow", "Stack",
-);
+const { ScrollView } = findByProps("ScrollView")
+const { Stack } = findByProps("Stack")
+const { Text } = findByProps("Text")
+const { Pressable } = findByProps("Pressable")
+const { View } = findByProps("View")
 
 const GridQualities = ["gif", "tinygif", "nanogif"] as const;
 
@@ -21,23 +22,55 @@ const set = (key: string, value: any) => { plugin.storage[key] = value; };
 export default function BringBackTenorSettings() {
     const [, forceUpdate] = React.useReducer((x: number) => ~x, 0);
 
+    const gridQuality = get("gridQuality", "tinygif");
+
     return (
         <ScrollView style={{ flex: 1 }}>
             <Stack style={{ padding: 16 }} spacing={16}>
-                <TableRadioGroup
-                    title="Grid Quality"
-                    value={get("gridQuality", "tinygif")}
-                    onChange={(v: string) => { set("gridQuality", v); forceUpdate(); }}
-                >
+                <Stack spacing={8}>
+                    <Text>Grid Quality</Text>
+
                     {GridQualities.map(q => (
-                        <TableRadioRow
+                        <Pressable
                             key={q}
-                            label={labels[q].label}
-                            subLabel={labels[q].subLabel}
-                            value={q}
-                        />
+                            onPress={() => {
+                                set("gridQuality", q);
+                                forceUpdate();
+                            }}
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: 10,
+                                    borderWidth: 2,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginRight: 8,
+                                }}
+                            >
+                                {gridQuality === q && (
+                                    <View
+                                        style={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: 5,
+                                        }}
+                                    />
+                                )}
+                            </View>
+
+                            <Stack>
+                                <Text>{labels[q].label}</Text>
+                                <Text>{labels[q].subLabel}</Text>
+                            </Stack>
+                        </Pressable>
                     ))}
-                </TableRadioGroup>
+                </Stack>
             </Stack>
         </ScrollView>
     );
