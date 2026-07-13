@@ -1,0 +1,8 @@
+(function(a,m,c){"use strict";function i(e){return new Date(e).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})}function d(e){try{if(!e||e.type!==0||e.content||e.message_reference?.type!==1||!e.message_snapshots?.length)return;const n=e.message_snapshots[0].message,t=e.message_reference,o=`https://discord.com/channels/${t.guild_id}/${t.channel_id}/${t.message_id}`;if(!n.content)e.content=`> \u279C *Forwarded*
+>  *${o} \u2022 ${i(n.timestamp)}*`;else{const l=n.content.split(`
+`).map(function(g){return`>    ${g}`}).join(`
+`);e.content=`> \u279C *Forwarded*
+> 
+${l}
+> 
+>  *${o} \u2022 ${i(n.timestamp)}*`}e.mentions=e.mentions.concat(n.mentions??[]),e.mention_roles=e.mention_roles.concat(n.mention_roles??[]),e.attachments=e.attachments.concat(n.attachments??[]),e.embeds=e.embeds.concat(n.embeds??[]),e.components=e.components.concat(n.components??[]),e.flags=0}catch(n){console.error("[ForwardFixer]: Failed to update message",n)}}const r=m.findByProps("createMessageRecord","updateMessageRecord"),s=[];var u={onLoad(){r||console.log("[ForwardFixer]: MessageRecord missing, disabling plugin."),s.push(c.instead("createMessageRecord",r,function(e,n){var t=e[0];return d(t),n(t)})),s.push(c.instead("updateMessageRecord",r,function(e,n){const t=e[0];var o=e[1];return d(o),n(t,o)})),console.log("[ForwardFixer]: Ready!")},onUnload(){for(const e of s)try{e()}catch(n){console.warn("[ForwardFixer]: failed to unpatch",n)}s.length=0,console.log("[ForwardFixer]: Unloaded!")}};return a.default=u,Object.defineProperty(a,"__esModule",{value:!0}),a})({},vendetta.metro,vendetta.patcher);
