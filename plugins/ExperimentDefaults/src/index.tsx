@@ -6,7 +6,10 @@ function experimentOverride(args: any[], orig: Function) {
 	if (experimentId === '2023-01_global_display_names' || 
 		experimentId === '2022-01_pronouns' || 
 		experimentId === '2023-01_silent_messages' || 
-		experimentId === '2021-09_favorites_server') {
+		experimentId === '2021-09_favorites_server' ||
+		experimentId === '2023-02_discord_embeds' ||
+		experimentId === '2023-03_improved_message_markdown' ||
+		experimentId === '2023-03_improved_message_markdown_guild') {
 		return { type: 1, revision: 1, population: 0, override: true, bucket: 1 };
 	}
 	return orig(...args);
