@@ -1,5 +1,5 @@
 import { instead } from "@vendetta/patcher";
-import { findByProps } from "@vendetta/metro";
+import { findByProps, findByStoreName } from "@vendetta/metro";
 import { plugin } from "@vendetta";
 
 import Settings from "./settings";
@@ -137,6 +137,21 @@ function makeThenable<T>(p: Promise<T>): Promise<T> {
 let lastSearchController: AbortController | null = null;
 let lastTrendingController: AbortController | null = null;
 
+function getGIFSrc(url, alt) {
+	if (/(giphy\.com)/.test(alt)) {
+        const match = /-(?:.(?!-))+$/.exec(alt);
+        const id = match ? match[0].slice(1) : undefined;
+        return `https://media.giphy.com/media/${id}/giphy.gif`;
+    } else if (/(tenor\.com)/.test(alt)) {
+        return alt + '.gif';
+    } else if (/(imgur\.com)/.test(alt) && /i\.imgur\.com\/.*$/.test(url)) {
+		const match = /i\.imgur\.com\/([^/.]+)(?=\.[a-z0-9]+(?:$|[?#]))/i.exec(url);
+        const id = match ? match[0] : undefined;
+        return `https://${id}.gif`;
+    }
+    return url.includes("?") ? url : alt;
+}
+
 export default {
     onLoad() {
         const defaults: Record<string, any> = {
@@ -154,13 +169,21 @@ export default {
 
         const ProviderConfig = findByProps("getProviderForAPIRequest");
         if (ProviderConfig) {
-            patches.push(
-                instead("getProviderForAPIRequest", ProviderConfig, () => "tenor"),
-            );
+            patches.push(instead("getProviderForAPIRequest", ProviderConfig, () => "tenor"));
         }
 
-        patches.push(
-            instead("get", httpModule, (args: any[], orig: Function) => {
+		const protoStore = findByStoreName("UserSettingsProtoStore");
+		const gifPicker = findByProps("useFavoriteGIFsMobile");
+		if (protoStore && gifPicker) {
+			patches.push(instead("useFavoriteGIFsMobile", gifPicker, (args: any[], orig: Function) => {
+				let gifs = Object.entries(protoStore?.frecencyWithoutFetchingLatest?.favoriteGifs?.gifs ?? {})
+					.map(([alt, gif]) => ({ ...gif, src: getGIFSrc(gif.src, alt), url: alt }))
+					.sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+				return gifs;
+			}));
+		}
+
+        patches.push(instead("get", httpModule, (args: any[], orig: Function) => {
                 const opts = args[0];
                 if (!opts?.url || typeof opts.url !== "string") return orig(...args);
 
