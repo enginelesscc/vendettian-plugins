@@ -168,11 +168,11 @@ export default {
                 const q = opts.query?.q;
                 const locale = opts.query?.locale?.replace?.("-", "_")?.toLowerCase();
 				
-                if (url.endsWith("/trending-search") || url.endsWith("/trending_search")) {
+                if (url.endsWith("/gifs/trending-search") || url.endsWith("/gifs/trending_search")) {
                     return makeThenable(Promise.resolve({ body: [] }));
                 }
 
-                if (url.endsWith("/trending-gifs") || url.endsWith("/trending_gifs")) {
+                if (url.endsWith("/gifs/trending-gifs") || url.endsWith("/gifs/trending_gifs")) {
                     lastTrendingController?.abort();
                     const controller = new AbortController();
                     lastTrendingController = controller;
@@ -184,7 +184,7 @@ export default {
                     );
                 }
 
-                if (url.endsWith("/search")) {
+                if (url.endsWith("/gifs/search")) {
                     lastSearchController?.abort();
                     const controller = new AbortController();
                     lastSearchController = controller;
@@ -196,7 +196,7 @@ export default {
                     );
                 }
 
-                if (url.endsWith("/trending")) {
+                if (url.endsWith("/gifs/trending")) {
                     lastTrendingController?.abort();
                     const controller = new AbortController();
                     lastTrendingController = controller;
@@ -212,7 +212,7 @@ export default {
                     );
                 }
 
-                if (url.endsWith("/suggest")) {
+                if (url.endsWith("/gifs/suggest")) {
                     if (!q) return orig(...args);
                     const suggestParams: Record<string, string> = { q, limit: "5" };
                     if (locale) suggestParams.locale = locale;
@@ -223,7 +223,7 @@ export default {
                     );
                 }
 
-                if (url.endsWith("/select")) {
+                if (url.endsWith("/gifs/select")) {
                     const shareParams: Record<string, string> = { id: q || "", q: q || "" };
                     if (locale) shareParams.locale = locale;
                     fetch(tenorUrl("registershare", shareParams)).catch((e) => {
