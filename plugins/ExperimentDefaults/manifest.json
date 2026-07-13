@@ -1,0 +1,11 @@
+{
+  "name": "ExperimentDefaults",
+  "description": "Some Experiment-Defaults for v180.0",
+  "authors": [
+    { "name": "Vivyy", "id": "485945225538437130" }
+  ],
+  "main": "src/index.tsx",
+  "vendetta": {
+    "icon": "ic_image_24px"
+  }
+}
