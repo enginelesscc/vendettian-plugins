@@ -3,6 +3,7 @@ import { findByProps, findByStoreName } from "@vendetta/metro";
 import { plugin } from "@vendetta";
 
 import Settings from "./settings";
+import patchFavoritesTile from "./favoritesTile";
 
 interface TenorMediaFormat {
     url: string;
@@ -160,6 +161,9 @@ export default {
         for (const key in defaults) {
             plugin.storage[key] = plugin.storage[key] ?? defaults[key];
         }
+
+        const unpatchFavoritesTile = patchFavoritesTile();
+        if (unpatchFavoritesTile) patches.push(unpatchFavoritesTile);
 
         const httpModule = findByProps("get", "post", "put", "patch", "delete");
         if (!httpModule?.get) {

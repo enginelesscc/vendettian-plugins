@@ -6,16 +6,16 @@
 		"dev:watch": "npx nodemon --ignore dist/ -e ts,tsx,json -x \"npm run build\""
 	},
 	"dependencies": {
-		"@noble/ed25519": "^3.1.0",
-		"@noble/hashes": "^2.2.0",
-		"@swc/helpers": "^0.5.17"
+		"@noble/ed25519": "^3.2.0",
+		"@noble/hashes": "^2.4.0",
+		"@swc/helpers": "^0.5.23"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^24.0.0",
-		"@rollup/plugin-node-resolve": "^15.0.1",
-		"@swc/core": "^1.3.35",
-		"esbuild": "^0.16.14",
-		"rollup": "^3.9.1",
+		"@rollup/plugin-commonjs": "^24.1.0",
+		"@rollup/plugin-node-resolve": "^15.3.1",
+		"@swc/core": "^1.16.2",
+		"esbuild": "^0.16.17",
+		"rollup": "^3.30.0",
 		"rollup-plugin-esbuild": "^5.0.0",
 		"vendetta-types": "latest",
 		"vendetta-extras": "latest"
