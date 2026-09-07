@@ -1,0 +1,12 @@
+{
+    "name": "FavoriteGifs",
+    "description": "Lets you favorite and unfavorite gifs.",
+    "authors": [
+        { "name": "castdrian", "id": "224617799434108928" }
+    ],
+    "main": "src/index.ts",
+    "vendetta": {
+        "icon": "ic_gif_24px",
+        "original": "castdrian.github.io/vendetta-plugins/favorite-gifs/"
+    }
+}
