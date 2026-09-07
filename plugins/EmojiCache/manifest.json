@@ -1,0 +1,7 @@
+{
+  "name": "EmojiCache",
+  "description": "Persistent custom emoji caching and a lighter emoji picker for Discord 180.0 on iOS.",
+  "authors": [{ "name": "Vivyy", "id": "485945225538437130" }],
+  "main": "src/index.tsx",
+  "vendetta": { "icon": "ic_image_24px" }
+}
