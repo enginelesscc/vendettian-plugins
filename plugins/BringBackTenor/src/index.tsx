@@ -150,6 +150,12 @@ function getGIFSrc(url, alt) {
         const id = match ? match[0] : undefined;
         return `https://${id}.gif`;
     }
+    // Klipy favorites have a share-page URL as their key and a separate media
+    // URL in src. The page itself is HTML and cannot be loaded by the picker.
+    // Preserve the exact media URL, including any delivery query parameters.
+    if (typeof alt === "string" && /^https?:\/\/(?:[^\/]+\.)?klipy\.com(?::\d+)?(?:[\/\?#]|$)/i.test(alt)) {
+        return typeof url === "string" && url.length > 0 ? url : alt;
+    }
     return url.includes("?") ? url : alt;
 }
 
