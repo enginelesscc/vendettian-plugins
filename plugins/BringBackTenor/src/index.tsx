@@ -1,6 +1,8 @@
 import { instead } from "@vendetta/patcher";
 import { findByProps, findByStoreName } from "@vendetta/metro";
 import { plugin } from "@vendetta";
+import { React } from "@vendetta/metro/common";
+import { createKlipyFavoriteResolver } from "./klipyFavorites";
 
 import Settings from "./settings";
 import patchFavoritesTile from "./favoritesTile";
@@ -182,19 +184,39 @@ export default {
             patches.push(instead("getProviderForAPIRequest", ProviderConfig, () => "tenor"));
         }
 
-		const protoStore = findByStoreName("UserSettingsProtoStore");
-		const gifPicker = findByProps("useFavoriteGIFsMobile");
-		if (protoStore && gifPicker) {
-			patches.push(instead("useFavoriteGIFsMobile", gifPicker, (args: any[], orig: Function) => {
-				let gifs = Object.entries(protoStore?.frecencyWithoutFetchingLatest?.favoriteGifs?.gifs ?? {})
-					.map(([alt, gif]) => ({ ...gif, src: getGIFSrc(gif.src, alt), url: alt }))
-					.sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
-				return gifs;
-			}));
-		}
+        const protoStore = findByStoreName("UserSettingsProtoStore");
+        const gifPicker = findByProps("useFavoriteGIFsMobile");
+        if (protoStore && gifPicker) {
+            const resolver = createKlipyFavoriteResolver(httpModule);
+            patches.push(() => resolver.dispose());
+            patches.push(instead("useFavoriteGIFsMobile", gifPicker, () => {
+                const favorites = protoStore?.frecencyWithoutFetchingLatest?.favoriteGifs?.gifs ?? {};
+                const entries = Object.entries(favorites) as Array<[string, any]>;
+                const pages = entries.filter(([url, gif]) =>
+                    /^https:\/\/(?:www\.)?klipy\.com\/gifs\//i.test(url) &&
+                    !/\.gif(?:[?#]|$)/i.test(String(gif?.src ?? ""))
+                ).map(([url]) => url);
+                const signature = pages.join("\n");
+                const [, refresh] = React.useReducer((n: number) => n + 1, 0);
+                React.useEffect(() => resolver.subscribe(() => refresh()), []);
+                React.useEffect(() => { resolver.resolve(pages); }, [signature]);
+                return entries.map(([url, gif]) => ({
+                    ...gif,
+                    src: resolver.get(url) ?? getGIFSrc(gif.src, url),
+                    url,
+                })).sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+            }));
+        }
 
         patches.push(instead("get", httpModule, (args: any[], orig: Function) => {
                 const opts = args[0];
+                // This is our own Klipy favorite lookup; send it through Discord's
+                // HTTP client instead of redirecting it to Tenor below.
+                if (opts?.__bringBackTenorFavoriteLookup) {
+                    const request = { ...opts };
+                    delete request.__bringBackTenorFavoriteLookup;
+                    return orig(request, ...args.slice(1));
+                }
                 if (!opts?.url || typeof opts.url !== "string") return orig(...args);
 
                 const url = opts.url.toLowerCase();
