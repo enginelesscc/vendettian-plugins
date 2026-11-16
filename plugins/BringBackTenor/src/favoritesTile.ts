@@ -7,11 +7,12 @@ export default function patchFavoritesTile() {
     const favoritesType = findByProps("GIFPickerResultTypes")?.GIFPickerResultTypes?.FAVORITES;
     let itemView = findByName("GIFPickerItemView", false);
 
-    // Discord 180.0 calls GIFPickerItemView "c" (module 4944). Check the
-    // adjacent picker module too: numeric IDs must not apply to other bundles.
+    // These Discord builds call GIFPickerItemView "c". Check the paired
+    // picker module before using a numeric ID from a known bundle.
     const modules = (window as any).modules;
-    if (!itemView && picker && modules?.[4935]?.publicModule?.exports === picker) {
-        const candidate = modules?.[4944]?.publicModule?.exports;
+    for (const [pickerId, itemId] of [[4935, 4944], [4934, 4943]]) {
+        if (itemView || !picker || modules?.[pickerId]?.publicModule?.exports !== picker) continue;
+        const candidate = modules?.[itemId]?.publicModule?.exports;
         if (candidate?.default?.name === "c") itemView = candidate;
     }
 
@@ -21,7 +22,7 @@ export default function patchFavoritesTile() {
     }
 
     return after("default", itemView, ([props], tree) => {
-        if (props?.item?.type !== favoritesType || !props.renderName) return tree;
+        if (props?.item?.type !== favoritesType) return tree;
 
         // GIFPickerItemView renders [button, loadingView]. The loading view
         // covers the button until onLoad; failed/stalled images never clear it.

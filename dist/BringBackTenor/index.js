@@ -1,2 +1,604 @@
-(function($,q,P,L,g){"use strict";function U(t){const e=new Map,n=new Set,o=[];let a=0,l=!1;const R=function(){l||n.forEach(function(i){return i()})},f=function(i){try{const r=new URL(i);if(r.protocol!=="https:"||!/^(?:www\.)?klipy\.com$/i.test(r.hostname))return null;const u=r.pathname.split("/").filter(Boolean);if(u.length!==2||u[0]!=="gifs")return null;const c=decodeURIComponent(u[1]).replace(/-/g," ").trim();return c&&c.length<=200?c:null}catch{return null}},v=function(i,r){try{const u=new URL(i),c=new URL(r);return u.protocol==="https:"&&c.protocol==="https:"&&/^(?:www\.)?klipy\.com$/i.test(u.hostname)&&/^(?:www\.)?klipy\.com$/i.test(c.hostname)&&u.pathname.replace(/\/+$/,"")===c.pathname.replace(/\/+$/,"")}catch{return!1}},b=function(i){if(typeof i!="string")return!1;try{const r=new URL(i);return r.protocol==="https:"&&/\.gif$/i.test(r.pathname)}catch{return!1}};function y(){for(;!l&&a<3&&o.length;){const i=o.shift(),r=e.get(i.url);r.state="pending",a++,Promise.resolve().then(function(){return t.get({url:"/gifs/search",query:{q:i.query,provider:"klipy",media_format:"gif",limit:100},__bringBackTenorFavoriteLookup:!0})}).then(function(u){if(l)return;const c=(Array.isArray(u?.body)?u.body:[]).find(function(m){return m&&typeof m.url=="string"&&v(m.url,i.url)});c&&b(c.src)?(r.state="resolved",r.src=c.src):(r.state="missing",r.retryAfter=Date.now()+6e4)},function(){l||(r.state="missing",r.retryAfter=Date.now()+6e4)}).then(function(){a--,l||(R(),y())})}}return{resolve(i){var r;if(!l){for(const u of i){const c=e.get(u);if(c&&(c.state!=="missing"||((r=c.retryAfter)!=null?r:0)>Date.now()))continue;const m=f(u);m&&(e.set(u,{state:"queued"}),o.push({url:u,query:m}))}y()}},get(i){var r;return(r=e.get(i))==null?void 0:r.src},subscribe(i){return n.add(i),function(){n.delete(i)}},dispose(){l=!0,o.length=0,n.clear(),e.clear()}}}const{ScrollView:D}=P.findByProps("ScrollView"),{Stack:S}=P.findByProps("Stack"),{Text:x}=P.findByProps("Text"),{Pressable:Q}=P.findByProps("Pressable"),{View:G}=P.findByProps("View"),N=["gif","tinygif","nanogif"],O={gif:{label:"GIF",subLabel:"Original quality, ~500px \u2014 slowest"},tinygif:{label:"TinyGIF",subLabel:"Small animated thumbnail, ~200px \u2014 default"},nanogif:{label:"NanoGIF",subLabel:"Tiny thumbnail, ~100px \u2014 fastest"}},H=function(t,e){var n;return(n=L.plugin.storage[t])!=null?n:e},K=function(t,e){L.plugin.storage[t]=e};function z(){const[,t]=g.React.useReducer(function(n){return~n},0),e=H("gridQuality","tinygif");return g.React.createElement(D,{style:{flex:1}},g.React.createElement(S,{style:{padding:16},spacing:16},g.React.createElement(S,{spacing:8},g.React.createElement(x,null,"Grid Quality"),N.map(function(n){return g.React.createElement(Q,{key:n,onPress:function(){K("gridQuality",n),t()},style:{flexDirection:"row",alignItems:"center"}},g.React.createElement(G,{style:{width:20,height:20,borderRadius:10,borderWidth:2,alignItems:"center",justifyContent:"center",marginRight:8}},e===n&&g.React.createElement(G,{style:{width:10,height:10,borderRadius:5}})),g.React.createElement(S,null,g.React.createElement(x,null,O[n].label),g.React.createElement(x,null,O[n].subLabel)))}))))}function Z(){var t,e,n,o,a,l,R;const f=P.findByProps("useFavoriteGIFCateogryMobile","useFavoriteGIFsMobile"),v=(e=(t=P.findByProps("GIFPickerResultTypes"))==null?void 0:t.GIFPickerResultTypes)==null?void 0:e.FAVORITES;let b=P.findByName("GIFPickerItemView",!1);const y=window.modules;if(!b&&f&&((o=(n=y?.[4935])==null?void 0:n.publicModule)==null?void 0:o.exports)===f){const i=(l=(a=y?.[4944])==null?void 0:a.publicModule)==null?void 0:l.exports;((R=i?.default)==null?void 0:R.name)==="c"&&(b=i)}if(!b||v==null){console.warn("[BringBackTenor] Favorites tile component not found; tile fix unavailable");return}return q.after("default",b,function([i],r){var u,c;if(((u=i?.item)==null?void 0:u.type)!==v||!i.renderName)return r;const m=(c=r?.props)==null?void 0:c.children;if(!Array.isArray(m))return r;const[s,p]=m;if(!g.React.isValidElement(s))return r;const h=s.props.children;if(!Array.isArray(h))return r;const[w]=h;if(!g.React.isValidElement(w)||typeof w.props.onLoad!="function")return r;const d=w.props,k=g.React.cloneElement(w,{onError:function(...fe){var C;d.onLoad(),(C=d.onError)==null||C.call(d,...fe)}}),E=g.React.cloneElement(s,{},k,...h.slice(1)),ce=g.React.isValidElement(p)?g.React.cloneElement(p,{pointerEvents:"none"}):p;return g.React.cloneElement(r,{},E,ce,...m.slice(2))})}var J=Object.defineProperty,X=Object.defineProperties,Y=Object.getOwnPropertyDescriptors,j=Object.getOwnPropertySymbols,ee=Object.prototype.hasOwnProperty,te=Object.prototype.propertyIsEnumerable,V=(t,e,n)=>e in t?J(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n,A=(t,e)=>{for(var n in e||(e={}))ee.call(e,n)&&V(t,n,e[n]);if(j)for(var n of j(e))te.call(e,n)&&V(t,n,e[n]);return t},ne=(t,e)=>X(t,Y(e));const re="3Z0688EVWYKH",ie=5,F=[];function W(t,e={}){return`https://api.tenor.com/v1/${t}?${new URLSearchParams(A({key:re},e))}`}function le(t){var e;const n=(e=L.plugin.storage.gridQuality)!=null?e:"tinygif";return t[n]||t.tinygif||t.gif||t.mp4||t.webm}function _(t){var e,n,o;const a=(e=t.media)==null?void 0:e[0];if(!a)return null;const l=le(a);if(!(l!=null&&l.url))return null;const R=a.tinygif||a.nanogif||l;return{id:t.id,title:t.title||"",url:t.itemurl,src:l.url,gif_src:l.url,width:((n=l.dims)==null?void 0:n[0])||0,height:((o=l.dims)==null?void 0:o[1])||0,preview:R.url}}function T(t,e={},n){return fetch(W(t,e),{signal:n}).then(function(o){return o.ok?o.json():{results:[],next:""}})}async function oe(t,e=50,n,o){const a=[],l=new Set;let R="",f=0;for(;a.length<e&&f<ie;){f++;const v={q:t,limit:String(Math.min(e-a.length,50))};o&&(v.locale=o),R&&(v.pos=R);const{results:b,next:y}=await T("search",v,n);if(!(b!=null&&b.length))break;for(const i of b)if(!l.has(i.id)&&(l.add(i.id),a.push(i),a.length>=e))break;if(!y||y===R)break;R=y}return a}async function M(t=1,e,n){const o={limit:String(t)};e&&(o.locale=e);const{results:a}=await T("trending",o,n);return(a||[]).map(_).filter(Boolean)}async function se(t,e){try{const n={type:"featured"};t&&(n.locale=t);const o=await T("categories",n,e),a=o.tags||o.results||[];return a.length?{categories:a.map(function(l){return{name:l.searchterm,src:l.image}})}:null}catch(n){return console.warn("[BringBackTenor] failed to load categories",n),null}}let I=null,B=null;function ue(t,e){if(/(giphy\.com)/.test(e)){const n=/-(?:.(?!-))+$/.exec(e);return`https://media.giphy.com/media/${n?n[0].slice(1):void 0}/giphy.gif`}else{if(/(tenor\.com)/.test(e))return e+".gif";if(/(imgur\.com)/.test(e)&&/i\.imgur\.com\/.*$/.test(t)){const n=/i\.imgur\.com\/([^/.]+)(?=\.[a-z0-9]+(?:$|[?#]))/i.exec(t);return`https://${n?n[0]:void 0}.gif`}}return typeof e=="string"&&/^https?:\/\/(?:[^\/]+\.)?klipy\.com(?::\d+)?(?:[\/\?#]|$)/i.test(e)?typeof t=="string"&&t.length>0?t:e:t.includes("?")?t:e}var ae={onLoad(){var t;const e={gridQuality:"tinygif"};for(const f in e)L.plugin.storage[f]=(t=L.plugin.storage[f])!=null?t:e[f];const n=Z();n&&F.push(n);const o=P.findByProps("get","post","put","patch","delete");if(!(o!=null&&o.get)){console.warn("[BringBackTenor] HTTP module not found, plugin disabled");return}const a=P.findByProps("getProviderForAPIRequest");a&&F.push(q.instead("getProviderForAPIRequest",a,function(){return"tenor"}));const l=P.findByStoreName("UserSettingsProtoStore"),R=P.findByProps("useFavoriteGIFsMobile");if(l&&R){const f=U(o);F.push(function(){return f.dispose()}),F.push(q.instead("useFavoriteGIFsMobile",R,function(){var v,b,y;const i=(y=(b=(v=l?.frecencyWithoutFetchingLatest)==null?void 0:v.favoriteGifs)==null?void 0:b.gifs)!=null?y:{},r=Object.entries(i),u=r.filter(function([s,p]){var h;return/^https:\/\/(?:www\.)?klipy\.com\/gifs\//i.test(s)&&!/\.gif(?:[?#]|$)/i.test(String((h=p?.src)!=null?h:""))}).map(function([s]){return s}),c=u.join(`
-`),[,m]=g.React.useReducer(function(s){return s+1},0);return g.React.useEffect(function(){return f.subscribe(function(){return m()})},[]),g.React.useEffect(function(){f.resolve(u)},[c]),r.map(function([s,p]){var h;return ne(A({},p),{src:(h=f.get(s))!=null?h:ue(p.src,s),url:s})}).sort(function(s,p){var h,w;return((h=p.order)!=null?h:0)-((w=s.order)!=null?w:0)})}))}F.push(q.instead("get",o,function(f,v){var b,y,i,r,u,c,m;const s=f[0];if(s!=null&&s.__bringBackTenorFavoriteLookup){const d=A({},s);return delete d.__bringBackTenorFavoriteLookup,v(d,...f.slice(1))}if(!(s!=null&&s.url)||typeof s.url!="string")return v(...f);const p=s.url.toLowerCase(),h=(b=s.query)==null?void 0:b.q,w=(u=(r=(i=(y=s.query)==null?void 0:y.locale)==null?void 0:i.replace)==null?void 0:r.call(i,"-","_"))==null?void 0:u.toLowerCase();if(p.endsWith("/gifs/trending-search")||p.endsWith("/gifs/trending_search"))return Promise.resolve({body:[]});if(p.endsWith("/gifs/trending-gifs")||p.endsWith("/gifs/trending_gifs")){B?.abort();const d=new AbortController;B=d;const k=((c=s.query)==null?void 0:c.limit)||50;return M(k,w,d.signal).then(function(E){return{body:E}}).catch(function(){return{body:[]}})}if(p.endsWith("/gifs/search")){I?.abort();const d=new AbortController;I=d;const k=((m=s.query)==null?void 0:m.limit)||50;return oe(h||"",k,d.signal,w).then(function(E){return{body:E.map(_).filter(Boolean)}}).catch(function(){return{body:[]}})}if(p.endsWith("/gifs/trending")){B?.abort();const d=new AbortController;return B=d,Promise.all([se(w,d.signal),M(1,w,d.signal)]).then(function([k,E]){return{body:{categories:k?.categories||[],gifs:E.length?E:[{src:""}]}}}).catch(function(){return{body:{categories:[],gifs:[{src:""}]}}})}if(p.endsWith("/gifs/suggest")){if(!h)return v(...f);const d={q:h,limit:"5"};return w&&(d.locale=w),T("search_suggestions",d).then(function(k){return{body:k.results||[]}}).catch(function(){return{body:[]}})}if(p.endsWith("/gifs/select")){const d={id:h||"",q:h||""};return w&&(d.locale=w),fetch(W("registershare",d)).catch(function(k){console.warn("[BringBackTenor] register share failed",k)}),Promise.resolve({body:{}})}return v(...f)}))},onUnload(){I?.abort(),I=null,B?.abort(),B=null;for(const t of F)try{t()}catch(e){console.warn("[BringBackTenor] failed to unpatch",e)}F.length=0},settings:z};return $.default=ae,Object.defineProperty($,"__esModule",{value:!0}),$})({},vendetta.patcher,vendetta.metro,vendetta,vendetta.metro.common);
+(function(exports,patcher,metro,_vendetta,common){'use strict';// The favorite proto stores only one source. Recent clients get both a preview
+// and a GIF from Discord's search API; recover the exact matching GIF on demand.
+function createKlipyFavoriteResolver(http) {
+    const cache = new Map();
+    const listeners = new Set();
+    const queue = [];
+    let active = 0;
+    let disposed = false;
+    let retryTimer;
+    const notify = function() {
+        if (!disposed) listeners.forEach(function(listener) {
+            try {
+                listener();
+            } catch (error) {
+                console.warn("[BringBackTenor] favorite refresh failed", error);
+            }
+        });
+    };
+    const queryFor = function(page) {
+        try {
+            const parsed = new URL(page);
+            if (parsed.protocol !== "https:" || !/^(?:www\.)?klipy\.com$/i.test(parsed.hostname)) return null;
+            const parts = parsed.pathname.split("/").filter(Boolean);
+            if (parts.length !== 2 || parts[0] !== "gifs") return null;
+            const query = decodeURIComponent(parts[1]).replace(/-/g, " ").trim();
+            return query && query.length <= 200 ? query : null;
+        } catch  {
+            return null;
+        }
+    };
+    const samePage = function(left, right) {
+        try {
+            const a = new URL(left), b = new URL(right);
+            return a.protocol === "https:" && b.protocol === "https:" && /^(?:www\.)?klipy\.com$/i.test(a.hostname) && /^(?:www\.)?klipy\.com$/i.test(b.hostname) && a.pathname.replace(/\/+$/, "") === b.pathname.replace(/\/+$/, "");
+        } catch  {
+            return false;
+        }
+    };
+    const isGif = function(url) {
+        if (typeof url !== "string") return false;
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === "https:" && /\.gif$/i.test(parsed.pathname);
+        } catch  {
+            return false;
+        }
+    };
+    function scheduleRetry() {
+        if (retryTimer !== undefined) clearTimeout(retryTimer);
+        retryTimer = undefined;
+        if (disposed || !listeners.size) return;
+        let next = Infinity;
+        for (const entry of cache.values()){
+            if (entry.state === "missing") next = Math.min(next, entry.retryAfter ?? Infinity);
+        }
+        if (next === Infinity) return;
+        retryTimer = setTimeout(function() {
+            retryTimer = undefined;
+            if (disposed || !listeners.size) return;
+            for (const [url, entry] of cache){
+                if (entry.state === "missing" && (entry.retryAfter ?? 0) <= Date.now()) {
+                    entry.state = "queued";
+                    queue.push({
+                        url,
+                        query: entry.query
+                    });
+                }
+            }
+            pump();
+            scheduleRetry();
+        }, Math.max(0, next - Date.now()));
+    }
+    function pump() {
+        while(!disposed && active < 3 && queue.length){
+            const job = queue.shift();
+            const entry = cache.get(job.url);
+            entry.state = "pending";
+            active++;
+            runLookup(job, entry);
+        }
+    }
+    // Older Hermes releases can reuse a loop's captured bindings. Give each
+    // asynchronous lookup its own function activation and arguments.
+    function runLookup(job, entry) {
+        Promise.resolve().then(function() {
+            return http.get({
+                url: "/gifs/search",
+                query: {
+                    q: job.query,
+                    provider: "klipy",
+                    media_format: "gif",
+                    limit: 100
+                },
+                __bringBackTenorFavoriteLookup: true
+            });
+        }).then(function(response) {
+            if (disposed) return;
+            const results = Array.isArray(response?.body) ? response.body : [];
+            const match = results.find(function(item) {
+                return item && typeof item.url === "string" && samePage(item.url, job.url);
+            });
+            const src = [
+                match?.src,
+                match?.gif_src
+            ].find(isGif);
+            if (src) {
+                entry.state = "resolved";
+                entry.src = src;
+            } else throw new Error("No matching GIF found");
+        }).catch(function() {
+            if (!disposed) {
+                entry.state = "missing";
+                entry.attempts++;
+                entry.retryAfter = Date.now() + Math.min(5000 * 2 ** Math.min(entry.attempts - 1, 6), 300000);
+            }
+        }).then(function() {
+            active--;
+            if (!disposed) {
+                if (entry.state === "resolved") notify();
+                pump();
+                scheduleRetry();
+            }
+        });
+    }
+    return {
+        resolve (pages) {
+            if (disposed) return;
+            for (const page of pages){
+                const previous = cache.get(page);
+                if (previous && (previous.state !== "missing" || (previous.retryAfter ?? 0) > Date.now())) continue;
+                const query = queryFor(page);
+                if (!query) continue;
+                cache.set(page, {
+                    state: "queued",
+                    query,
+                    attempts: previous?.attempts ?? 0
+                });
+                queue.push({
+                    url: page,
+                    query
+                });
+            }
+            pump();
+        },
+        get (page) {
+            return cache.get(page)?.src;
+        },
+        subscribe (listener) {
+            listeners.add(listener);
+            scheduleRetry();
+            return function() {
+                listeners.delete(listener);
+                scheduleRetry();
+            };
+        },
+        dispose () {
+            disposed = true;
+            if (retryTimer !== undefined) clearTimeout(retryTimer);
+            queue.length = 0;
+            listeners.clear();
+            cache.clear();
+        }
+    };
+}const { ScrollView } = metro.findByProps("ScrollView");
+const { Stack } = metro.findByProps("Stack");
+const { Text } = metro.findByProps("Text");
+const { Pressable } = metro.findByProps("Pressable");
+const { View } = metro.findByProps("View");
+const GridQualities = [
+    "gif",
+    "tinygif",
+    "nanogif"
+];
+const labels = {
+    gif: {
+        label: "GIF",
+        subLabel: "Original quality, ~500px — slowest"
+    },
+    tinygif: {
+        label: "TinyGIF",
+        subLabel: "Small animated thumbnail, ~200px — default"
+    },
+    nanogif: {
+        label: "NanoGIF",
+        subLabel: "Tiny thumbnail, ~100px — fastest"
+    }
+};
+const get = function(key, fallback) {
+    return _vendetta.plugin.storage[key] ?? fallback;
+};
+const set = function(key, value) {
+    _vendetta.plugin.storage[key] = value;
+};
+function BringBackTenorSettings() {
+    const [, forceUpdate] = common.React.useReducer(function(x) {
+        return ~x;
+    }, 0);
+    const gridQuality = get("gridQuality", "tinygif");
+    return /*#__PURE__*/ common.React.createElement(ScrollView, {
+        style: {
+            flex: 1
+        }
+    }, /*#__PURE__*/ common.React.createElement(Stack, {
+        style: {
+            padding: 16
+        },
+        spacing: 16
+    }, /*#__PURE__*/ common.React.createElement(Stack, {
+        spacing: 8
+    }, /*#__PURE__*/ common.React.createElement(Text, null, "Grid Quality"), GridQualities.map(function(q) {
+        return /*#__PURE__*/ common.React.createElement(Pressable, {
+            key: q,
+            onPress: function() {
+                set("gridQuality", q);
+                forceUpdate();
+            },
+            style: {
+                flexDirection: "row",
+                alignItems: "center"
+            }
+        }, /*#__PURE__*/ common.React.createElement(View, {
+            style: {
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                borderWidth: 2,
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 8
+            }
+        }, gridQuality === q && /*#__PURE__*/ common.React.createElement(View, {
+            style: {
+                width: 10,
+                height: 10,
+                borderRadius: 5
+            }
+        })), /*#__PURE__*/ common.React.createElement(Stack, null, /*#__PURE__*/ common.React.createElement(Text, null, labels[q].label), /*#__PURE__*/ common.React.createElement(Text, null, labels[q].subLabel)));
+    }))));
+}function patchFavoritesTile() {
+    const picker = metro.findByProps("useFavoriteGIFCateogryMobile", "useFavoriteGIFsMobile");
+    const favoritesType = metro.findByProps("GIFPickerResultTypes")?.GIFPickerResultTypes?.FAVORITES;
+    let itemView = metro.findByName("GIFPickerItemView", false);
+    // These Discord builds call GIFPickerItemView "c". Check the paired
+    // picker module before using a numeric ID from a known bundle.
+    const modules = window.modules;
+    for (const [pickerId, itemId] of [
+        [
+            4935,
+            4944
+        ],
+        [
+            4934,
+            4943
+        ]
+    ]){
+        if (itemView || !picker || modules?.[pickerId]?.publicModule?.exports !== picker) continue;
+        const candidate = modules?.[itemId]?.publicModule?.exports;
+        if (candidate?.default?.name === "c") itemView = candidate;
+    }
+    if (!itemView || favoritesType == null) {
+        console.warn("[BringBackTenor] Favorites tile component not found; tile fix unavailable");
+        return;
+    }
+    return patcher.after("default", itemView, function([props], tree) {
+        if (props?.item?.type !== favoritesType) return tree;
+        // GIFPickerItemView renders [button, loadingView]. The loading view
+        // covers the button until onLoad; failed/stalled images never clear it.
+        const children = tree?.props?.children;
+        if (!Array.isArray(children)) return tree;
+        const [button, loadingView] = children;
+        if (!common.React.isValidElement(button)) return tree;
+        const buttonChildren = button.props.children;
+        if (!Array.isArray(buttonChildren)) return tree;
+        const [image] = buttonChildren;
+        if (!common.React.isValidElement(image) || typeof image.props.onLoad !== "function") return tree;
+        const imageProps = image.props;
+        const safeImage = common.React.cloneElement(image, {
+            onError: function(...args) {
+                // Use the component's own setter to reveal its name on failure.
+                imageProps.onLoad();
+                imageProps.onError?.(...args);
+            }
+        });
+        const safeButton = common.React.cloneElement(button, {}, safeImage, ...buttonChildren.slice(1));
+        // Allow navigation immediately, including when the request never ends.
+        const safeLoadingView = common.React.isValidElement(loadingView) ? common.React.cloneElement(loadingView, {
+            pointerEvents: "none"
+        }) : loadingView;
+        return common.React.cloneElement(tree, {}, safeButton, safeLoadingView, ...children.slice(2));
+    });
+}const TENOR_KEY = "3Z0688EVWYKH";
+const MAX_PAGES = 5;
+const patches = [];
+function tenorUrl(path, extra = {}) {
+    return `https://api.tenor.com/v1/${path}?${new URLSearchParams({
+        key: TENOR_KEY,
+        ...extra
+    })}`;
+}
+function pickMedia(m) {
+    const q = _vendetta.plugin.storage.gridQuality ?? "tinygif";
+    return m[q] || m.tinygif || m.gif || m.mp4 || m.webm;
+}
+function toDiscordGif(item) {
+    const m = item.media?.[0];
+    if (!m) return null;
+    const fmt = pickMedia(m);
+    if (!fmt?.url) return null;
+    const thumb = m.tinygif || m.nanogif || fmt;
+    return {
+        id: item.id,
+        title: item.title || "",
+        url: item.itemurl,
+        src: fmt.url,
+        gif_src: fmt.url,
+        width: fmt.dims?.[0] || 0,
+        height: fmt.dims?.[1] || 0,
+        preview: thumb.url
+    };
+}
+function tenorFetch(path, extra = {}, signal) {
+    return fetch(tenorUrl(path, extra), {
+        signal
+    }).then(function(r) {
+        return r.ok ? r.json() : {
+            results: [],
+            next: ""
+        };
+    });
+}
+async function doSearch(query, limit = 50, signal, locale) {
+    const all = [];
+    const seen = new Set();
+    let pos = "";
+    let pages = 0;
+    while(all.length < limit && pages < MAX_PAGES){
+        pages++;
+        const params = {
+            q: query,
+            limit: String(Math.min(limit - all.length, 50))
+        };
+        if (locale) params.locale = locale;
+        if (pos) params.pos = pos;
+        const { results, next } = await tenorFetch("search", params, signal);
+        if (!results?.length) break;
+        for (const item of results){
+            if (seen.has(item.id)) continue;
+            seen.add(item.id);
+            all.push(item);
+            if (all.length >= limit) break;
+        }
+        if (!next || next === pos) break;
+        pos = next;
+    }
+    return all;
+}
+async function loadTrendingGIFs(limit = 1, locale, signal) {
+    const params = {
+        limit: String(limit)
+    };
+    if (locale) params.locale = locale;
+    const { results } = await tenorFetch("trending", params, signal);
+    return (results || []).map(toDiscordGif).filter(Boolean);
+}
+async function loadCategories(locale, signal) {
+    try {
+        const params = {
+            type: "featured"
+        };
+        if (locale) params.locale = locale;
+        const resp = await tenorFetch("categories", params, signal);
+        const tags = resp.tags || resp.results || [];
+        if (!tags.length) return null;
+        return {
+            categories: tags.map(function(t) {
+                return {
+                    name: t.searchterm,
+                    src: t.image
+                };
+            })
+        };
+    } catch (e) {
+        console.warn("[BringBackTenor] failed to load categories", e);
+        return null;
+    }
+}
+function makeThenable(p) {
+    return p;
+}
+let lastSearchController = null;
+let lastTrendingController = null;
+function getGIFSrc(url, alt) {
+    if (/(giphy\.com)/.test(alt)) {
+        const match = /-(?:.(?!-))+$/.exec(alt);
+        const id = match ? match[0].slice(1) : undefined;
+        return `https://media.giphy.com/media/${id}/giphy.gif`;
+    } else if (/(tenor\.com)/.test(alt)) {
+        return alt + '.gif';
+    } else if (/(imgur\.com)/.test(alt) && /i\.imgur\.com\/.*$/.test(url)) {
+        const match = /i\.imgur\.com\/([^/.]+)(?=\.[a-z0-9]+(?:$|[?#]))/i.exec(url);
+        const id = match ? match[0] : undefined;
+        return `https://${id}.gif`;
+    }
+    // Klipy favorites have a share-page URL as their key and a separate media
+    // URL in src. The page itself is HTML and cannot be loaded by the picker.
+    // Preserve the exact media URL, including any delivery query parameters.
+    if (typeof alt === "string" && /^https?:\/\/(?:[^\/]+\.)?klipy\.com(?::\d+)?(?:[\/\?#]|$)/i.test(alt)) {
+        return typeof url === "string" && url.length > 0 ? url : alt;
+    }
+    return url.includes("?") ? url : alt;
+}
+var index = {
+    onLoad () {
+        const defaults = {
+            gridQuality: "tinygif"
+        };
+        for(const key in defaults){
+            _vendetta.plugin.storage[key] = _vendetta.plugin.storage[key] ?? defaults[key];
+        }
+        const unpatchFavoritesTile = patchFavoritesTile();
+        if (unpatchFavoritesTile) patches.push(unpatchFavoritesTile);
+        const httpModule = metro.findByProps("get", "post", "put", "patch", "delete");
+        if (!httpModule?.get) {
+            console.warn("[BringBackTenor] HTTP module not found, plugin disabled");
+            return;
+        }
+        const ProviderConfig = metro.findByProps("getProviderForAPIRequest");
+        if (ProviderConfig) {
+            patches.push(patcher.instead("getProviderForAPIRequest", ProviderConfig, function() {
+                return "tenor";
+            }));
+        }
+        const protoStore = metro.findByStoreName("UserSettingsProtoStore");
+        const gifPicker = metro.findByProps("useFavoriteGIFsMobile");
+        if (protoStore && gifPicker) {
+            const resolver = createKlipyFavoriteResolver(httpModule);
+            patches.push(function() {
+                return resolver.dispose();
+            });
+            patches.push(patcher.instead("useFavoriteGIFsMobile", gifPicker, function() {
+                const favorites = protoStore?.frecencyWithoutFetchingLatest?.favoriteGifs?.gifs ?? {};
+                const entries = Object.entries(favorites).sort(function(a, b) {
+                    return (b[1]?.order ?? 0) - (a[1]?.order ?? 0);
+                });
+                const pages = entries.filter(function([url, gif]) {
+                    return /^https:\/\/(?:www\.)?klipy\.com\/gifs\//i.test(url) && !/\.gif(?:[?#]|$)/i.test(String(gif?.src ?? ""));
+                }).map(function([url]) {
+                    return url;
+                });
+                const signature = pages.join("\n");
+                const [, refresh] = common.React.useReducer(function(n) {
+                    return n + 1;
+                }, 0);
+                common.React.useEffect(function() {
+                    return resolver.subscribe(function() {
+                        return refresh();
+                    });
+                }, []);
+                common.React.useEffect(function() {
+                    resolver.resolve(pages);
+                }, [
+                    signature
+                ]);
+                return entries.map(function([url, gif]) {
+                    return {
+                        ...gif,
+                        src: resolver.get(url) ?? getGIFSrc(gif.src, url),
+                        url
+                    };
+                }).sort(function(a, b) {
+                    return (b.order ?? 0) - (a.order ?? 0);
+                });
+            }));
+        }
+        patches.push(patcher.instead("get", httpModule, function(args, orig) {
+            const opts = args[0];
+            // This is our own Klipy favorite lookup; send it through Discord's
+            // HTTP client instead of redirecting it to Tenor below.
+            if (opts?.__bringBackTenorFavoriteLookup) {
+                const request = {
+                    ...opts
+                };
+                delete request.__bringBackTenorFavoriteLookup;
+                return orig(request, ...args.slice(1));
+            }
+            if (!opts?.url || typeof opts.url !== "string") return orig(...args);
+            const url = opts.url.toLowerCase();
+            const q = opts.query?.q;
+            const locale = opts.query?.locale?.replace?.("-", "_")?.toLowerCase();
+            if (url.endsWith("/gifs/trending-search") || url.endsWith("/gifs/trending_search")) {
+                return makeThenable(Promise.resolve({
+                    body: []
+                }));
+            }
+            if (url.endsWith("/gifs/trending-gifs") || url.endsWith("/gifs/trending_gifs")) {
+                lastTrendingController?.abort();
+                const controller = new AbortController();
+                lastTrendingController = controller;
+                const limit = opts.query?.limit || 50;
+                return makeThenable(loadTrendingGIFs(limit, locale, controller.signal).then(function(gifs) {
+                    return {
+                        body: gifs
+                    };
+                }).catch(function() {
+                    return {
+                        body: []
+                    };
+                }));
+            }
+            if (url.endsWith("/gifs/search")) {
+                lastSearchController?.abort();
+                const controller = new AbortController();
+                lastSearchController = controller;
+                const limit = opts.query?.limit || 50;
+                return makeThenable(doSearch(q || "", limit, controller.signal, locale).then(function(items) {
+                    return {
+                        body: items.map(toDiscordGif).filter(Boolean)
+                    };
+                }).catch(function() {
+                    return {
+                        body: []
+                    };
+                }));
+            }
+            if (url.endsWith("/gifs/trending")) {
+                lastTrendingController?.abort();
+                const controller = new AbortController();
+                lastTrendingController = controller;
+                return makeThenable(Promise.all([
+                    loadCategories(locale, controller.signal),
+                    loadTrendingGIFs(1, locale, controller.signal)
+                ]).then(function([catData, gifs]) {
+                    return {
+                        body: {
+                            categories: catData?.categories || [],
+                            gifs: gifs.length ? gifs : [
+                                {
+                                    src: ""
+                                }
+                            ]
+                        }
+                    };
+                }).catch(function() {
+                    return {
+                        body: {
+                            categories: [],
+                            gifs: [
+                                {
+                                    src: ""
+                                }
+                            ]
+                        }
+                    };
+                }));
+            }
+            if (url.endsWith("/gifs/suggest")) {
+                if (!q) return orig(...args);
+                const suggestParams = {
+                    q,
+                    limit: "5"
+                };
+                if (locale) suggestParams.locale = locale;
+                return makeThenable(tenorFetch("search_suggestions", suggestParams).then(function(r) {
+                    return {
+                        body: r.results || []
+                    };
+                }).catch(function() {
+                    return {
+                        body: []
+                    };
+                }));
+            }
+            if (url.endsWith("/gifs/select")) {
+                const shareParams = {
+                    id: q || "",
+                    q: q || ""
+                };
+                if (locale) shareParams.locale = locale;
+                fetch(tenorUrl("registershare", shareParams)).catch(function(e) {
+                    console.warn("[BringBackTenor] register share failed", e);
+                });
+                return makeThenable(Promise.resolve({
+                    body: {}
+                }));
+            }
+            return orig(...args);
+        }));
+    },
+    onUnload () {
+        lastSearchController?.abort();
+        lastSearchController = null;
+        lastTrendingController?.abort();
+        lastTrendingController = null;
+        for (const p of patches){
+            try {
+                p();
+            } catch (e) {
+                console.warn("[BringBackTenor] failed to unpatch", e);
+            }
+        }
+        patches.length = 0;
+    },
+    settings: BringBackTenorSettings
+};exports.default=index;Object.defineProperty(exports,'__esModule',{value:true});return exports;})({},vendetta.patcher,vendetta.metro,vendetta,vendetta.metro.common);

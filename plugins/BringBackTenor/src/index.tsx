@@ -191,7 +191,8 @@ export default {
             patches.push(() => resolver.dispose());
             patches.push(instead("useFavoriteGIFsMobile", gifPicker, () => {
                 const favorites = protoStore?.frecencyWithoutFetchingLatest?.favoriteGifs?.gifs ?? {};
-                const entries = Object.entries(favorites) as Array<[string, any]>;
+                const entries = (Object.entries(favorites) as Array<[string, any]>)
+                    .sort((a, b) => (b[1]?.order ?? 0) - (a[1]?.order ?? 0));
                 const pages = entries.filter(([url, gif]) =>
                     /^https:\/\/(?:www\.)?klipy\.com\/gifs\//i.test(url) &&
                     !/\.gif(?:[?#]|$)/i.test(String(gif?.src ?? ""))
