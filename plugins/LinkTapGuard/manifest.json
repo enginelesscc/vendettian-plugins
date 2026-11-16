@@ -1,0 +1,7 @@
+{
+  "name": "LinkTapGuard",
+  "description": "Prevent message links opening when a touch becomes a swipe.",
+  "authors": [{ "name": "Vivyy", "id": "485945225538437130" }],
+  "main": "src/index.ts",
+  "vendetta": { "icon": "ic_link_24px" }
+}
