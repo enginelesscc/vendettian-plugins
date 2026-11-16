@@ -1,0 +1,7 @@
+{
+  "name": "DebuggerIndicator",
+  "description": "Show a red outline while the Vendetta debugger is connected.",
+  "authors": [{ "name": "Vivyy", "id": "485945225538437130" }],
+  "main": "src/index.tsx",
+  "vendetta": { "icon": "ic_bug_report_24px" }
+}
